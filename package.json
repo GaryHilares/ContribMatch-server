@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Gary Hilares, Andrew Li, Patrick Perdomo",
-  "license": "CC-BY-4.0",
+  "author": "ContribMatch dev team",
+  "license": "Apache-2.0",
   "dependencies": {
     "express": "^4.21.2"
   },
