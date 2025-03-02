@@ -1,6 +1,6 @@
 {
   "name": "contribmatch-server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A tool for matching open source contributors to open source projects.",
   "type": "module",
   "scripts": {
