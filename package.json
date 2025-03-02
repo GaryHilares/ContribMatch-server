@@ -1,0 +1,11 @@
+{
+  "name": "contribmatch-server",
+  "version": "1.0.0",
+  "description": "A tool for matching open source contributors to open source projects.",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gary Hilares, Andrew Li, Patrick Perdomo",
+  "license": "CC-BY-4.0"
+}
