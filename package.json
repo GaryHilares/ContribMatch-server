@@ -7,5 +7,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ContribMatch dev team",
-  "license": "CC-BY-4.0"
+  "license": "Apache-2.0"
 }
