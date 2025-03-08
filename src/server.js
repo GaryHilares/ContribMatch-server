@@ -3,8 +3,29 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello, Express!');
+app.post('/createContributor', (req, res) => {
+  res.status(503);
+  res.send('Not implemented yet');
+});
+
+app.post('/createProject', (req, res) => {
+  res.status(503);
+  res.send('Not implemented yet');
+});
+
+app.post('/editContributor', (req, res) => {
+  res.status(503);
+  res.send('Not implemented yet');
+});
+
+app.post('/editProject', (req, res) => {
+  res.status(503);
+  res.send('Not implemented yet');
+});
+
+app.post('updateMatches', (req, res) => {
+  res.status(503);
+  res.send('Not implemented yet');
 });
 
 const PORT = process.env.PORT || 3000;
