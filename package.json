@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node src/server.js",
+    "prettier:check": "prettier --check src/**/*.js",
+    "prettier:fix": "prettier --write src/**/*.js",
+    "lint:check": "eslint --ext .js src",
+    "lint:fix": "eslint --fix --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ContribMatch dev team",
