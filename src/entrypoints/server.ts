@@ -13,12 +13,12 @@ app.post('/createProject', (req, res) => {
   res.send('Not implemented yet');
 });
 
-app.post('/editContributor', (req, res) => {
+app.post('/editContributor/:id', (req, res) => {
   res.status(503);
   res.send('Not implemented yet');
 });
 
-app.post('/editProject', (req, res) => {
+app.post('/editProject/:id', (req, res) => {
   res.status(503);
   res.send('Not implemented yet');
 });
