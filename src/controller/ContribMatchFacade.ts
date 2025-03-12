@@ -2,30 +2,61 @@ import { Proficiency, Skill } from '../model/Skill';
 import { Project, Contributor } from '../model/model';
 import { computeScore } from '../model/computeScore';
 
+/**
+ * @brief Represents an error that indicates that the requested resource could not be found.
+ */
 class NotFoundError extends Error {}
 
+/**
+ * @brief Represents a facade for the ContribMatch API.
+ */
 class ContribMatchFacade {
   private contributors: Array<Contributor>;
   private projects: Array<Project>;
 
+  /**
+   * @brief Creates a new project with no contributors and no projects.
+   */
   public constructor() {
     this.contributors = [];
     this.projects = [];
   }
 
+  /**
+   * @brief Matches the given contributor and the given project.
+   * @param contributor Contributor to match.
+   * @param project Project to match.
+   */
   private match(contributor: Contributor, project: Project): void {
     contributor.addProject(project);
     project.addContributor(contributor);
   }
 
+  /**
+   * @brief Creates a contributor with the given username and skills.
+   * @param username Username of the contributor to add.
+   * @param skills Skills of the contributor to add.
+   * @returns ID under which the contributor was added.
+   */
   public createContributor(username: string, skills: Array<Skill>): number {
     return this.contributors.push(new Contributor(username, skills)) - 1;
   }
 
+  /**
+   * @brief Creates a project with the given name and skills.
+   * @param name Name of the project to add.
+   * @param skills Skills of the project to add.
+   * @returns ID under which the project was added.
+   */
   public createProject(name: string, skills: Array<Skill>): number {
     return this.projects.push(new Project(name, skills)) - 1;
   }
 
+  /**
+   * @brief Modifies the contributor with given ID so that it has the given skills.
+   * @param idx ID of the contributor to edit.
+   * @param skills New skills for the contributor.
+   */
   public editContributor(idx: number, skills: Array<Skill>): void {
     if (!(idx >= 0 && idx < this.contributors.length)) {
       throw new NotFoundError(`ID ${idx} was not found`);
@@ -33,6 +64,11 @@ class ContribMatchFacade {
     this.contributors[idx].updateSkills(skills);
   }
 
+  /**
+   * @brief Modifies the project with given ID so that it has the given skills.
+   * @param idx ID of the project to edit.
+   * @param skills New skills for the project.
+   */
   public editProject(idx: number, skills: Array<Skill>): void {
     if (!(idx >= 0 && idx < this.projects.length)) {
       throw new NotFoundError(`ID ${idx} was not found`);
@@ -40,6 +76,9 @@ class ContribMatchFacade {
     this.projects[idx].updateSkills(skills);
   }
 
+  /**
+   * @brief Updates the matches in the database.
+   */
   public updateMatches(): void {
     interface Match {
       score: number;
@@ -73,6 +112,11 @@ class ContribMatchFacade {
     }
   }
 
+  /**
+   * @brief Produces the projects that the contributor with given ID is matched to.
+   * @param idx ID of contributor to get the matches of.
+   * @returns Projects matched to the project with the given ID.
+   */
   public getContributorMatches(idx: number): Array<Project> {
     if (!(idx >= 0 && idx < this.contributors.length)) {
       throw new NotFoundError(`ID ${idx} was not found`);
@@ -80,6 +124,11 @@ class ContribMatchFacade {
     return this.contributors[idx].getMatches();
   }
 
+  /**
+   * @brief Produces the contributors that the project with given ID is matched to.
+   * @param idx ID of project to get the matches of.
+   * @returns Contributors matched to the project with the given ID.
+   */
   public getProjectMatches(idx: number): Array<Contributor> {
     if (!(idx >= 0 && idx < this.projects.length)) {
       throw new NotFoundError(`ID ${idx} was not found`);
