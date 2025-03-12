@@ -1,10 +1,12 @@
 import { Skill } from './Skill';
 
 class Contributor {
+  private username: string;
   private skills: Array<Skill>;
   private projects: Array<Project>;
 
-  public constructor(skills: Array<Skill>) {
+  public constructor(username: string, skills: Array<Skill>) {
+    this.username = username;
     this.skills = skills;
     this.projects = [];
   }
@@ -24,13 +26,23 @@ class Contributor {
   public getSkills(): Array<Skill> {
     return this.skills;
   }
+
+  public getUsername(): string {
+    return this.username;
+  }
+
+  public getMatches(): Array<Project> {
+    return this.projects;
+  }
 }
 
 class Project {
+  private name: string;
   private skills: Array<Skill>;
   private contributors: Contributor[];
 
-  public constructor(skills: Array<Skill>) {
+  public constructor(name: string, skills: Array<Skill>) {
+    this.name = name;
     this.skills = skills;
     this.contributors = [];
   }
@@ -49,6 +61,14 @@ class Project {
 
   public getSkills(): Array<Skill> {
     return this.skills;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getMatches(): Array<Contributor> {
+    return this.contributors;
   }
 }
 

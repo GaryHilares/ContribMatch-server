@@ -1,6 +1,8 @@
 import { Proficiency, Skill } from '../model/Skill';
-import { Project, Contributor } from '../model/Model';
+import { Project, Contributor } from '../model/model';
 import { computeScore } from '../model/computeScore';
+
+class NotFoundError extends Error {}
 
 class ContribMatchFacade {
   private contributors: Array<Contributor>;
@@ -16,20 +18,26 @@ class ContribMatchFacade {
     project.addContributor(contributor);
   }
 
-  public createContributor(skills: Array<Skill>): void {
-    this.contributors.push(new Contributor(skills));
+  public createContributor(username: string, skills: Array<Skill>): number {
+    return this.contributors.push(new Contributor(username, skills)) - 1;
   }
 
-  public createProject(skills: Array<Skill>): void {
-    this.projects.push(new Project(skills));
+  public createProject(name: string, skills: Array<Skill>): number {
+    return this.projects.push(new Project(name, skills)) - 1;
   }
 
   public editContributor(idx: number, skills: Array<Skill>): void {
+    if (!(idx >= 0 && idx < this.contributors.length)) {
+      throw new NotFoundError(`ID ${idx} was not found`);
+    }
     this.contributors[idx].updateSkills(skills);
   }
 
   public editProject(idx: number, skills: Array<Skill>): void {
-    this.contributors[idx].updateSkills(skills);
+    if (!(idx >= 0 && idx < this.projects.length)) {
+      throw new NotFoundError(`ID ${idx} was not found`);
+    }
+    this.projects[idx].updateSkills(skills);
   }
 
   public updateMatches(): void {
@@ -53,14 +61,30 @@ class ContribMatchFacade {
         }
       }
     }
-    possibleMatches.sort((lhs: Match, rhs: Match): number => {
-      return lhs.score - rhs.score;
-    });
+    possibleMatches
+      .sort((lhs: Match, rhs: Match): number => {
+        return lhs.score - rhs.score;
+      })
+      .reverse();
     for (const { contributor, project } of possibleMatches) {
       if (contributor.getMatchCount() === 0 && project.getMatchCount() === 0) {
         this.match(contributor, project);
       }
     }
+  }
+
+  public getContributorMatches(idx: number): Array<Project> {
+    if (!(idx >= 0 && idx < this.contributors.length)) {
+      throw new NotFoundError(`ID ${idx} was not found`);
+    }
+    return this.contributors[idx].getMatches();
+  }
+
+  public getProjectMatches(idx: number): Array<Contributor> {
+    if (!(idx >= 0 && idx < this.projects.length)) {
+      throw new NotFoundError(`ID ${idx} was not found`);
+    }
+    return this.projects[idx].getMatches();
   }
 }
 

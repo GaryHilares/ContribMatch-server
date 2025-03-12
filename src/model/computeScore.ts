@@ -1,5 +1,5 @@
 import { Proficiency } from './Skill';
-import { Skill, Contributor, Project } from './Model';
+import { Skill, Contributor, Project } from './model';
 
 function scoreProfficiency(
   contributorSkill: Proficiency,
