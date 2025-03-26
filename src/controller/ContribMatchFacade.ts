@@ -1,6 +1,7 @@
-import { Proficiency, Skill } from '../model/Skill';
-import { Project, Contributor } from '../model/model';
-import { computeScore } from '../model/computeScore';
+import type { Skill } from '../model/Skill.ts';
+import { Proficiency } from '../model/Skill.ts';
+import { Project, Contributor } from '../model/model.ts';
+import { computeScore } from '../model/computeScore.ts';
 
 /**
  * @brief Represents an error that indicates that the requested resource could not be found.
@@ -15,7 +16,7 @@ class ContribMatchFacade {
   private projects: Array<Project>;
 
   /**
-   * @brief Creates a new project with no contributors and no projects.
+   * @brief Creates a new facade with no contributors and no projects.
    */
   public constructor() {
     this.contributors = [];

@@ -16,4 +16,5 @@ interface Skill {
   proficiency: Proficiency;
 }
 
-export { Proficiency, Skill };
+export { Proficiency };
+export type { Skill };

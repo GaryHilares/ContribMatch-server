@@ -1,4 +1,4 @@
-import { Skill } from './Skill';
+import type { Skill } from './Skill.ts';
 
 /**
  * @brief Represents a contributor with a username, skills, and matched projects.
@@ -136,4 +136,4 @@ class Project {
   }
 }
 
-export { Skill, Contributor, Project };
+export { Contributor, Project };

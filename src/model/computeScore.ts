@@ -1,5 +1,6 @@
-import { Proficiency } from './Skill';
-import { Skill, Contributor, Project } from './model';
+import { Proficiency } from './Skill.ts';
+import type { Skill } from './Skill.ts';
+import { Contributor, Project } from './model.ts';
 
 /**
  * @brief Computes a score of how much the proficiencies of the contributor and the project match.

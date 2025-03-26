@@ -4,7 +4,7 @@
   "description": "A tool for matching open source contributors to open source projects.",
   "type": "module",
   "scripts": {
-    "dev": "ts-node src/server.ts",
+    "dev": "node --experimental-transform-types ./src/entrypoints/server.ts",
     "prettier:check": "prettier --check src/**/*.js",
     "prettier:fix": "prettier --write src/**/*.js",
     "lint:check": "eslint --ext .js src",
