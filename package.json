@@ -1,21 +1,30 @@
 {
   "name": "contribmatch-server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A tool for matching open source contributors to open source projects.",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --experimental-transform-types ./src/entrypoints/server.ts",
+    "prettier:check": "prettier --check src/**/*.js",
+    "prettier:fix": "prettier --write src/**/*.js",
+    "lint:check": "eslint --ext .js src",
+    "lint:fix": "eslint --fix --ext .js src",
+    "test": "jest"
   },
-  "author": "Gary Hilares, Andrew Li, Patrick Perdomo",
-  "license": "CC-BY-4.0",
+  "author": "ContribMatch dev team",
+  "license": "Apache-2.0",
   "dependencies": {
     "express": "^4.21.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@jest/globals": "^29.7.0",
+    "@types/express": "^5.0.0",
     "eslint": "^9.22.0",
     "globals": "^16.0.0",
+    "jest": "^29.7.0",
     "prettier": "3.5.3",
+    "ts-jest": "^29.2.6",
     "typescript-eslint": "^8.26.0"
   }
 }
