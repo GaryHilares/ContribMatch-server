@@ -51,6 +51,38 @@ app.post('/createProject', (req, res) => {
   }
 });
 
+app.get('/readContributor', (req, res) => {
+  if (
+    req.body.id &&
+    typeof req.body.id === 'number'
+  ) {
+    try {
+      const contributor = facade.getContributor(req.body.id);    
+      res.status(201).send(JSON.stringify({ contributor }));
+    } catch (NotFoundError) {
+      res.status(404).send(`ID ${req.body.id} not found`);
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
+app.get('/readProject', (req, res) => {
+  if (
+    req.body.id &&
+    typeof req.body.id === 'number'
+  ) {
+    try {
+      const project = facade.getProject(req.body.id);    
+      res.status(201).send(JSON.stringify({ project }));
+    } catch (NotFoundError) {
+      res.status(404).send(`ID ${req.body.id} not found`);
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
 app.post('/editContributor/:id', (req, res) => {
   if (
     req.body.id &&
