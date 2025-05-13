@@ -69,6 +69,23 @@ app.post('/editContributor/:id', (req, res) => {
   }
 });
 
+app.post('/deleteContributor/:id', (req, res) => {
+  if (
+    req.body.id != null &&
+    typeof req.body.id === 'number'
+  ) {
+    try {
+      facade.deleteContributor(req.body.id);
+      res.status(200).send('Contributor delete successfully');
+    } catch {
+      res.status(404).send(`ID ${req.body.id} not found`);
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
+
 app.post('/editProject/:id', (req, res) => {
   if (
     req.body.id &&
