@@ -69,7 +69,7 @@ app.post('/editContributor/:id', (req, res) => {
   }
 });
 
-app.post('/deleteContributor/:id', (req, res) => {
+app.delete('/deleteContributor/:id', (req, res) => {
   if (
     req.body.id != null &&
     typeof req.body.id === 'number'
