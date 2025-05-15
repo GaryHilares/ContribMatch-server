@@ -69,16 +69,14 @@ app.post('/editContributor/:id', (req, res) => {
   }
 });
 
-app.delete('/deleteContributor/:id', (req, res) => {
-  if (
-    req.body.id != null &&
-    typeof req.body.id === 'number'
-  ) {
+app.delete('/contributor/:id', (req, res) => {
+  const id = Number(req.params.id);
+  if (!isNaN(id)) {
     try {
-      facade.deleteContributor(req.body.id);
-      res.status(200).send('Contributor delete successfully');
+      facade.deleteContributor(id);
+      res.status(200).send('Contributor deleted successfully');
     } catch {
-      res.status(404).send(`ID ${req.body.id} not found`);
+      res.status(404).send(`ID ${id} not found`);
     }
   } else {
     res.status(400).send('Bad request');
