@@ -12,7 +12,7 @@ class NotFoundError extends Error {}
  * @brief Represents a facade for the ContribMatch API.
  */
 class ContribMatchFacade {
-  private contributors: Array<Contributor>;
+  private contributors: Array<Contributor | null>;
   private projects: Array<Project>;
 
   /**
@@ -113,6 +113,17 @@ class ContribMatchFacade {
     }
   }
 
+ /**
+   * @brief Deletes the contributor with given ID
+   * @param idx ID of the contributor to remove.
+   */
+  public deleteContributor(idx: number): void {
+    if (!(idx >= 0 && idx < this.contributors.length)) {
+        throw new NotFoundError(`ID ${idx} was not found`);
+    }
+    this.contributors[idx] = null;
+  }
+
   /**
    * @brief Produces the projects that the contributor with given ID is matched to.
    * @param idx ID of contributor to get the matches of.
@@ -135,6 +146,15 @@ class ContribMatchFacade {
       throw new NotFoundError(`ID ${idx} was not found`);
     }
     return this.projects[idx].getMatches();
+  }
+
+  /** 
+   * @brief PLACEHOLDER FUNCTION: Produces contributor 
+   * @param idx ID of the contributor to return.
+   * @returns Return contributor at index
+   */
+  public getContributor(idx: number): Contributor {
+    return this.contributors[idx];
   }
 }
 
