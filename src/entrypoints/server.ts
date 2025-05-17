@@ -51,6 +51,42 @@ app.post('/createProject', (req, res) => {
   }
 });
 
+function isNumber(str): boolean {
+    return !isNaN(str);
+}
+
+app.get('/contributor/:id', (req, res) => {
+  if (
+    req.params.id &&
+    isNumber(req.params.id)
+  ) {
+    try {
+      const contributor = facade.getContributor(req.params.id);    
+      res.status(201).send(JSON.stringify({ contributor }));
+    } catch (NotFoundError) {
+      res.status(404).send(`ID ${req.params.id} not found`);
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
+app.get('/project/:id', (req, res) => {
+  if (
+    req.params.id &&
+    isNumber(req.params.id)
+  ) {
+    try {
+      const project = facade.getProject(req.params.id);    
+      res.status(201).send(JSON.stringify({ project }));
+    } catch (NotFoundError) {
+      res.status(404).send(`ID ${req.params.id} not found`);
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
 app.post('/editContributor/:id', (req, res) => {
   if (
     req.body.id &&
