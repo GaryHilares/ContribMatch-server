@@ -51,32 +51,36 @@ app.post('/createProject', (req, res) => {
   }
 });
 
-app.get('/readContributor', (req, res) => {
+function isNumber(str): boolean {
+    return !isNaN(str);
+}
+
+app.get('/contributor/:id', (req, res) => {
   if (
-    req.body.id &&
-    typeof req.body.id === 'number'
+    req.params.id &&
+    isNumber(req.params.id)
   ) {
     try {
-      const contributor = facade.getContributor(req.body.id);    
+      const contributor = facade.getContributor(req.params.id);    
       res.status(201).send(JSON.stringify({ contributor }));
     } catch (NotFoundError) {
-      res.status(404).send(`ID ${req.body.id} not found`);
+      res.status(404).send(`ID ${req.params.id} not found`);
     }
   } else {
     res.status(400).send('Bad request');
   }
 });
 
-app.get('/readProject', (req, res) => {
+app.get('/project/:id', (req, res) => {
   if (
-    req.body.id &&
-    typeof req.body.id === 'number'
+    req.params.id &&
+    isNumber(req.params.id)
   ) {
     try {
-      const project = facade.getProject(req.body.id);    
+      const project = facade.getProject(req.params.id);    
       res.status(201).send(JSON.stringify({ project }));
     } catch (NotFoundError) {
-      res.status(404).send(`ID ${req.body.id} not found`);
+      res.status(404).send(`ID ${req.params.id} not found`);
     }
   } else {
     res.status(400).send('Bad request');
