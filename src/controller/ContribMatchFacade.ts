@@ -54,6 +54,30 @@ class ContribMatchFacade {
   }
 
   /**
+   * @brief Returns the contributor with given ID or throws NotFoundError if no such contributor exists.
+   * @param id ID of contributor to return.
+   * @returns Contributor with ID @param id .
+   */
+  public getContributor(id: number) {
+    if (id < 0 || id >= this.contributors.length) {
+        throw new NotFoundError(`ID ${id} was not found`);
+      }
+      return (this.contributors[id]);
+  }
+
+  /**
+   * @brief Returns the project with given ID or throws NotFoundError if no such project exists.
+   * @param id ID of contributor to return.
+   * @returns Project with ID @param id .
+   */
+  public getProject(id: number) {
+    if (id < 0 || id >= this.contributors.length) {
+        throw new NotFoundError(`ID ${id} was not found`);
+      }
+      return (this.projects[id]);
+  }
+
+  /**
    * @brief Modifies the contributor with given ID so that it has the given skills.
    * @param idx ID of the contributor to edit.
    * @param skills New skills for the contributor.
