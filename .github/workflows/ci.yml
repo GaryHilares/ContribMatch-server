@@ -13,11 +13,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
         cache: 'npm'
-    - run: npm ci
-    - run: npm test
+    - name: Clean install dependencies
+      run: npm ci
+    - name: Run formatting checks
+      run: npm run prettier:check
+    - name: Run lint checks
+      run: npm run lint:check
+    - name: Run tests
+      run: npm test
