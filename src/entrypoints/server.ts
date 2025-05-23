@@ -69,6 +69,21 @@ app.post('/editContributor/:id', (req, res) => {
   }
 });
 
+app.delete('/contributor/:id', (req, res) => {
+  const id = Number(req.params.id);
+  if (!isNaN(id)) {
+    try {
+      facade.deleteContributor(id);
+      res.status(200).send('Contributor deleted successfully');
+    } catch {
+      res.status(404).send(`ID ${id} not found`);
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
+
 app.post('/editProject/:id', (req, res) => {
   if (
     req.body.id &&

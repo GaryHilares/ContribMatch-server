@@ -3,12 +3,11 @@ import { Proficiency } from '../src/controller/ContribMatchFacade';
 import { ContribMatchFacade } from '../src/controller/ContribMatchFacade';
 
 describe('ContribMatchFacade', () => {
+  let facade: ContribMatchFacade;
+  beforeEach(() => {
+    facade = new ContribMatchFacade();
+  });
   describe('updateMatches', () => {
-    let facade: ContribMatchFacade;
-    beforeEach(() => {
-      facade = new ContribMatchFacade();
-    });
-
     it('should pair together when single perfect match', () => {
       const contributorId = facade.createContributor('contributor1', [
         {
@@ -117,6 +116,67 @@ describe('ContribMatchFacade', () => {
       expect(projectMatches1[0].getUsername()).toBe('contributor2');
       expect(projectMatches2.length).toBe(1);
       expect(projectMatches2[0].getUsername()).toBe('contributor1');
+    });
+  });
+  describe('deleteContributor', () => {
+    it('should delete contributor', () => {
+      const contributorId = facade.createContributor('contributor1', [
+        {
+          name: 'TypeScript',
+          proficiency: Proficiency.ADVANCED,
+        },
+      ]);
+
+      facade.deleteContributor(contributorId);
+      const contributorMatches = facade.getContributor(contributorId);
+      expect(contributorMatches).toBe(null);
+    });
+    it('should delete 2 contributors in order', () => {
+      const contributorId1 = facade.createContributor('contributor1', [
+        {
+          name: 'TypeScript',
+          proficiency: Proficiency.ADVANCED,
+        },
+      ]);
+      const contributorId2 = facade.createContributor('contributor2', [
+        {
+          name: 'JavaScript',
+          proficiency: Proficiency.MEDIUM,
+        },
+      ]);
+
+      facade.deleteContributor(contributorId2);
+      expect(facade.getContributor(contributorId2)).toBe(null);
+
+      const contributor1 = facade.getContributor(contributorId1);
+      expect(contributor1?.getUsername()).toBe('contributor1');
+
+      facade.deleteContributor(contributorId1);
+      expect(facade.getContributor(contributorId1)).toBe(null);
+    });
+    it('should not delete contributor out of bounds', () => {
+      const contributorId1 = facade.createContributor('contributor1', [
+        {
+          name: 'TypeScript',
+          proficiency: Proficiency.ADVANCED,
+        },
+      ]);
+      const contributorId2 = facade.createContributor('contributor2', [
+        {
+          name: 'JavaScript',
+          proficiency: Proficiency.MEDIUM,
+        },
+      ]);
+
+      expect(() => {
+        facade.deleteContributor(-1);
+      }).toThrow('ID -1 was not found');
+      expect(() => {
+        facade.deleteContributor(2);
+      }).toThrow('ID 2 was not found');
+
+      expect(facade.getContributor(contributorId1)).not.toBe(null);
+      expect(facade.getContributor(contributorId2)).not.toBe(null);
     });
   });
 });
