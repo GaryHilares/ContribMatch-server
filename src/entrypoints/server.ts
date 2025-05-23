@@ -83,7 +83,6 @@ app.delete('/contributor/:id', (req, res) => {
   }
 });
 
-
 app.post('/editProject/:id', (req, res) => {
   if (
     req.body.id &&

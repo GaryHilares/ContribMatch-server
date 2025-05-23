@@ -113,13 +113,13 @@ class ContribMatchFacade {
     }
   }
 
- /**
+  /**
    * @brief Deletes the contributor with given ID
    * @param idx ID of the contributor to remove.
    */
   public deleteContributor(idx: number): void {
     if (!(idx >= 0 && idx < this.contributors.length)) {
-        throw new NotFoundError(`ID ${idx} was not found`);
+      throw new NotFoundError(`ID ${idx} was not found`);
     }
     this.contributors[idx] = null;
   }
@@ -148,8 +148,8 @@ class ContribMatchFacade {
     return this.projects[idx].getMatches();
   }
 
-  /** 
-   * @brief PLACEHOLDER FUNCTION: Produces contributor 
+  /**
+   * @brief PLACEHOLDER FUNCTION: Produces contributor
    * @param idx ID of the contributor to return.
    * @returns Return contributor at index
    */
