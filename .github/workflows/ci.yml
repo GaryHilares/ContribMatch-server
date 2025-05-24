@@ -15,6 +15,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref || github.ref_name }}
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
