@@ -52,16 +52,13 @@ app.post('/createProject', (req, res) => {
 });
 
 function isNumber(str): boolean {
-    return !isNaN(str);
+  return !isNaN(str);
 }
 
 app.get('/contributor/:id', (req, res) => {
-  if (
-    req.params.id &&
-    isNumber(req.params.id)
-  ) {
+  if (req.params.id && isNumber(req.params.id)) {
     try {
-      const contributor = facade.getContributor(req.params.id);    
+      const contributor = facade.getContributor(req.params.id);
       res.status(201).send(JSON.stringify({ contributor }));
     } catch (NotFoundError) {
       res.status(404).send(`ID ${req.params.id} not found`);
@@ -72,12 +69,9 @@ app.get('/contributor/:id', (req, res) => {
 });
 
 app.get('/project/:id', (req, res) => {
-  if (
-    req.params.id &&
-    isNumber(req.params.id)
-  ) {
+  if (req.params.id && isNumber(req.params.id)) {
     try {
-      const project = facade.getProject(req.params.id);    
+      const project = facade.getProject(req.params.id);
       res.status(201).send(JSON.stringify({ project }));
     } catch (NotFoundError) {
       res.status(404).send(`ID ${req.params.id} not found`);
