@@ -2,11 +2,7 @@ import type { Skill } from '../model/Skill.ts';
 import { Proficiency } from '../model/Skill.ts';
 import { Project, Contributor } from '../model/model.ts';
 import { computeScore } from '../model/computeScore.ts';
-
-/**
- * @brief Represents an error that indicates that the requested resource could not be found.
- */
-class NotFoundError extends Error {}
+import { NotFoundError } from '../error/NotFoundError.ts';
 
 /**
  * @brief Represents a facade for the ContribMatch API.
