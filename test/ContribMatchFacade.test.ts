@@ -22,7 +22,7 @@ describe('ContribMatchFacade', () => {
           proficiency: Proficiency.ADVANCED,
         },
       ]);
-      facade.updateMatches();
+      facade.createMatches();
       const contributorMatches = facade.getContributorMatches(contributorId);
       const projectMatches = facade.getProjectMatches(projectId);
       expect(contributorMatches.length).toBe(1);
@@ -44,7 +44,7 @@ describe('ContribMatchFacade', () => {
           proficiency: Proficiency.ADVANCED,
         },
       ]);
-      facade.updateMatches();
+      facade.createMatches();
       const contributorMatches = facade.getContributorMatches(contributorId2);
       const projectMatches = facade.getProjectMatches(projectId);
       expect(contributorMatches.length).toBe(1);
@@ -71,7 +71,7 @@ describe('ContribMatchFacade', () => {
           proficiency: Proficiency.ADVANCED,
         },
       ]);
-      facade.updateMatches();
+      facade.createMatches();
       const contributorMatches = facade.getContributorMatches(contributorId2);
       const projectMatches = facade.getProjectMatches(projectId);
       expect(contributorMatches.length).toBe(1);
@@ -104,7 +104,7 @@ describe('ContribMatchFacade', () => {
           proficiency: Proficiency.ADVANCED,
         },
       ]);
-      facade.updateMatches();
+      facade.createMatches();
       const contributorMatches1 = facade.getContributorMatches(contributorId1);
       const contributorMatches2 = facade.getContributorMatches(contributorId2);
       const projectMatches1 = facade.getProjectMatches(projectId1);

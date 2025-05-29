@@ -145,14 +145,9 @@ app.put('/projects/:id', (req, res) => {
   }
 });
 
-app.put('/update-matches', (req, res) => {
-  facade.updateMatches();
-  res.status(200).send('Updated matches successfully');
-});
-
-app.get('/print-state', (req, res) => {
-  console.log(inspect(facade, true, 5));
-  res.status(200).send('OK');
+app.post('/matches', (req, res) => {
+  facade.createMatches();
+  res.status(200).send('Created matches successfully');
 });
 
 const PORT = process.env.PORT || 3000;

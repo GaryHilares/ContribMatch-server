@@ -100,7 +100,7 @@ class ContribMatchFacade {
   /**
    * @brief Updates the matches in the database.
    */
-  public updateMatches(): void {
+  public createMatches(): void {
     interface Match {
       score: number;
       contributor: Contributor;
