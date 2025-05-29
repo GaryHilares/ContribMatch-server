@@ -2,11 +2,7 @@ import type { Skill } from '../model/Skill.ts';
 import { Proficiency } from '../model/Skill.ts';
 import { Project, Contributor } from '../model/model.ts';
 import { computeScore } from '../model/computeScore.ts';
-
-/**
- * @brief Represents an error that indicates that the requested resource could not be found.
- */
-class NotFoundError extends Error {}
+import { NotFoundError } from '../error/NotFoundError.ts';
 
 /**
  * @brief Represents a facade for the ContribMatch API.
@@ -58,11 +54,11 @@ class ContribMatchFacade {
    * @param id ID of contributor to return.
    * @returns Contributor with ID @param id .
    */
-  public getContributor(id: number) {
+  public getContributor(id: number): Contributor {
     if (id < 0 || id >= this.contributors.length) {
-        throw new NotFoundError(`ID ${id} was not found`);
-      }
-      return (this.contributors[id]);
+      throw new NotFoundError(`ID ${id} was not found`);
+    }
+    return this.contributors[id];
   }
 
   /**
@@ -70,11 +66,11 @@ class ContribMatchFacade {
    * @param id ID of contributor to return.
    * @returns Project with ID @param id .
    */
-  public getProject(id: number) {
+  public getProject(id: number): Project {
     if (id < 0 || id >= this.contributors.length) {
-        throw new NotFoundError(`ID ${id} was not found`);
-      }
-      return (this.projects[id]);
+      throw new NotFoundError(`ID ${id} was not found`);
+    }
+    return this.projects[id];
   }
 
   /**
@@ -170,15 +166,6 @@ class ContribMatchFacade {
       throw new NotFoundError(`ID ${idx} was not found`);
     }
     return this.projects[idx].getMatches();
-  }
-
-  /**
-   * @brief PLACEHOLDER FUNCTION: Produces contributor
-   * @param idx ID of the contributor to return.
-   * @returns Return contributor at index
-   */
-  public getContributor(idx: number): Contributor {
-    return this.contributors[idx];
   }
 }
 
