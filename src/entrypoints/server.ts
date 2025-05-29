@@ -3,6 +3,7 @@ import { inspect } from 'util';
 import { ContribMatchFacade } from '../controller/ContribMatchFacade.ts';
 import { Proficiency } from '../model/Skill.ts';
 import type { Skill } from '../model/Skill.ts';
+import { NotFoundError } from '../error/NotFoundError.ts';
 
 const app = express();
 app.use(express.json({ type: 'application/json' }));
@@ -23,7 +24,7 @@ function isValidSkills(obj: unknown): obj is Array<Skill> {
   );
 }
 
-app.post('/createContributor', (req, res) => {
+app.post('/contributors', (req, res) => {
   if (
     req.body.name &&
     typeof req.body.name === 'string' &&
@@ -37,7 +38,7 @@ app.post('/createContributor', (req, res) => {
   }
 });
 
-app.post('/createProject', (req, res) => {
+app.post('/projects', (req, res) => {
   if (
     req.body.name &&
     typeof req.body.name === 'string' &&
@@ -51,99 +52,105 @@ app.post('/createProject', (req, res) => {
   }
 });
 
-function isNumber(str): boolean {
-    return !isNaN(str);
-}
-
-app.get('/contributor/:id', (req, res) => {
-  if (
-    req.params.id &&
-    isNumber(req.params.id)
-  ) {
+app.get('/contributors/:id', (req, res) => {
+  if (!Number.isNaN(Number(req.params.id))) {
     try {
-      const contributor = facade.getContributor(req.params.id);    
+      const contributor = facade.getContributor(Number(req.params.id));
       res.status(201).send(JSON.stringify({ contributor }));
-    } catch (NotFoundError) {
-      res.status(404).send(`ID ${req.params.id} not found`);
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        res.status(404).send(`ID ${req.params.id} not found`);
+      } else {
+        res.status(500).send(`Internal Server Error`);
+      }
     }
   } else {
     res.status(400).send('Bad request');
   }
 });
 
-app.get('/project/:id', (req, res) => {
-  if (
-    req.params.id &&
-    isNumber(req.params.id)
-  ) {
+app.get('/projects/:id', (req, res) => {
+  if (!Number.isNaN(Number(req.params.id))) {
     try {
-      const project = facade.getProject(req.params.id);    
+      const project = facade.getProject(Number(req.params.id));
       res.status(201).send(JSON.stringify({ project }));
-    } catch (NotFoundError) {
-      res.status(404).send(`ID ${req.params.id} not found`);
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        res.status(404).send(`ID ${req.params.id} not found`);
+      } else {
+        res.status(500).send(`Internal Server Error`);
+      }
     }
   } else {
     res.status(400).send('Bad request');
   }
 });
 
-app.post('/editContributor/:id', (req, res) => {
+app.put('/contributors/:id', (req, res) => {
   if (
-    req.body.id &&
-    typeof req.body.id === 'number' &&
+    !Number.isNaN(Number(req.params.id)) &&
     req.body.skills &&
     isValidSkills(req.body.skills)
   ) {
     try {
-      facade.editContributor(req.body.id, req.body.skills);
+      facade.editContributor(Number(req.params.id), req.body.skills);
       res.status(200).send('Contributor edited successfully');
-    } catch {
-      res.status(404).send(`ID ${req.body.id} not found`);
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        res.status(404).send(`ID ${req.params.id} not found`);
+      } else {
+        res.status(500).send(`Internal Server Error`);
+      }
     }
   } else {
     res.status(400).send('Bad request');
   }
 });
 
-app.delete('/contributor/:id', (req, res) => {
-  const id = Number(req.params.id);
-  if (!isNaN(id)) {
+app.delete('/contributors/:id', (req, res) => {
+  if (!Number.isNaN(Number(req.params.id))) {
     try {
-      facade.deleteContributor(id);
+      facade.deleteContributor(Number(req.params.id));
       res.status(200).send('Contributor deleted successfully');
-    } catch {
-      res.status(404).send(`ID ${id} not found`);
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        res.status(404).send(`ID ${req.params.id} not found`);
+      } else {
+        res.status(500).send(`Internal Server Error`);
+      }
     }
   } else {
     res.status(400).send('Bad request');
   }
 });
 
-
-app.post('/editProject/:id', (req, res) => {
+app.put('/projects/:id', (req, res) => {
   if (
-    req.body.id &&
-    typeof req.body.id === 'number' &&
+    !Number.isNaN(Number(req.params.id)) &&
     req.body.skills &&
     isValidSkills(req.body.skills)
   ) {
     try {
-      facade.editProject(req.body.id, req.body.skills);
+      facade.editProject(Number(req.params.id), req.body.skills);
       res.status(200).send('Project edited successfully');
-    } catch {
-      res.status(404).send(`ID ${req.body.id} not found`);
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        res.status(404).send(`ID ${req.params.id} not found`);
+      } else {
+        res.status(500).send(`Internal Server Error`);
+      }
     }
   } else {
     res.status(400).send('Bad request');
   }
 });
 
-app.post('/updateMatches', (req, res) => {
+app.put('/update-matches', (req, res) => {
   facade.updateMatches();
   res.status(200).send('Updated matches successfully');
 });
 
-app.get('/printState', (req, res) => {
+app.get('/print-state', (req, res) => {
   console.log(inspect(facade, true, 5));
   res.status(200).send('OK');
 });
