@@ -1,7 +1,8 @@
+import 'dotenv/config';
+
 import { describe, beforeEach, it, expect } from '@jest/globals';
 import { Proficiency } from '../src/controller/ContribMatchFacade';
 import { ContribMatchFacade } from '../src/controller/ContribMatchFacade';
-
 describe('ContribMatchFacade', () => {
   let facade: ContribMatchFacade;
   beforeEach(() => {
