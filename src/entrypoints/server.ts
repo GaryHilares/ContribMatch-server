@@ -107,6 +107,23 @@ app.put('/contributors/:id', (req, res) => {
   }
 });
 
+app.delete('/projects/:id', (req, res) => {
+  if (!Number.isNaN(Number(req.params.id))) {
+    try {
+      facade.deleteProject(Number(req.params.id));
+      res.status(200).send('Project deleted successfully');
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        res.status(404).send(`ID ${req.params.id} not found`);
+      } else {
+        res.status(500).send(`Internal Server Error`);
+      }
+    }
+  } else {
+    res.status(400).send('Bad request');
+  }
+});
+
 app.delete('/contributors/:id', (req, res) => {
   if (!Number.isNaN(Number(req.params.id))) {
     try {

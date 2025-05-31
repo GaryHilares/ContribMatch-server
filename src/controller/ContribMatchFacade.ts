@@ -67,7 +67,7 @@ class ContribMatchFacade {
    * @returns Project with ID @param id .
    */
   public getProject(id: number): Project {
-    if (id < 0 || id >= this.contributors.length) {
+    if (id < 0 || id >= this.projects.length) {
       throw new NotFoundError(`ID ${id} was not found`);
     }
     return this.projects[id];
@@ -95,6 +95,28 @@ class ContribMatchFacade {
       throw new NotFoundError(`ID ${idx} was not found`);
     }
     this.projects[idx].updateSkills(skills);
+  }
+
+  /**
+   * @brief Deletes the project with given ID
+   * @param idx ID of the project to remove.
+   */
+  deleteProject(idx: number): void {
+    if (!(idx >= 0 && idx < this.projects.length)) {
+      throw new NotFoundError(`ID ${idx} was not found`);
+    }
+    this.projects[idx] = null;
+  }
+
+  /**
+   * @brief Deletes the contributor with given ID
+   * @param idx ID of the contributor to remove.
+   */
+  public deleteContributor(idx: number): void {
+    if (!(idx >= 0 && idx < this.contributors.length)) {
+      throw new NotFoundError(`ID ${idx} was not found`);
+    }
+    this.contributors[idx] = null;
   }
 
   /**
@@ -131,17 +153,6 @@ class ContribMatchFacade {
         this.match(contributor, project);
       }
     }
-  }
-
-  /**
-   * @brief Deletes the contributor with given ID
-   * @param idx ID of the contributor to remove.
-   */
-  public deleteContributor(idx: number): void {
-    if (!(idx >= 0 && idx < this.contributors.length)) {
-      throw new NotFoundError(`ID ${idx} was not found`);
-    }
-    this.contributors[idx] = null;
   }
 
   /**
