@@ -1,5 +1,4 @@
 import express from 'express';
-import { inspect } from 'util';
 import { ContribMatchFacade } from '../controller/ContribMatchFacade.ts';
 import { Proficiency } from '../model/Skill.ts';
 import type { Skill } from '../model/Skill.ts';
