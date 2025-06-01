@@ -18,6 +18,7 @@ CREATE TABLE tokens (
 CREATE TABLE projects (
     id bigint unique GENERATED ALWAYS AS IDENTITY,
     name text not null,
+    email text not null,
     owner_id bigint not null references users(id)
 );
 
