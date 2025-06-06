@@ -179,4 +179,66 @@ describe('ContribMatchFacade', () => {
       expect(facade.getContributor(contributorId2)).not.toBe(null);
     });
   });
+
+  describe('deleteProject', () => {
+    it('should delete project', () => {
+      const projectId = facade.createProject('project1', [
+        {
+          name: 'TypeScript',
+          proficiency: Proficiency.ADVANCED,
+        },
+      ]);
+
+      facade.deleteProject(projectId);
+      const projectMatches = facade.getProject(projectId);
+      expect(projectMatches).toBe(null);
+    });
+    it('should delete 2 projects in order', () => {
+      const projectId1 = facade.createProject('project1', [
+        {
+          name: 'TypeScript',
+          proficiency: Proficiency.ADVANCED,
+        },
+      ]);
+      const projectId2 = facade.createProject('project2', [
+        {
+          name: 'JavaScript',
+          proficiency: Proficiency.MEDIUM,
+        },
+      ]);
+
+      facade.deleteProject(projectId2);
+      expect(facade.getProject(projectId2)).toBe(null);
+
+      const project1 = facade.getProject(projectId1);
+      expect(project1?.getName()).toBe('project1');
+
+      facade.deleteProject(projectId1);
+      expect(facade.getProject(projectId1)).toBe(null);
+    });
+    it('should not delete project out of bounds', () => {
+      const projectId1 = facade.createProject('project1', [
+        {
+          name: 'TypeScript',
+          proficiency: Proficiency.ADVANCED,
+        },
+      ]);
+      const projectId2 = facade.createProject('project2', [
+        {
+          name: 'JavaScript',
+          proficiency: Proficiency.MEDIUM,
+        },
+      ]);
+
+      expect(() => {
+        facade.deleteProject(-1);
+      }).toThrow('ID -1 was not found');
+      expect(() => {
+        facade.deleteProject(2);
+      }).toThrow('ID 2 was not found');
+
+      expect(facade.getProject(projectId1)).not.toBe(null);
+      expect(facade.getProject(projectId2)).not.toBe(null);
+    });
+  });
 });
