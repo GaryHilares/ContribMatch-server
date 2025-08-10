@@ -1,8 +1,4 @@
-import type { Skill } from '../model/Skill.ts';
 import { Proficiency } from '../model/Skill.ts';
-import { Project, Contributor } from '../model/model.ts';
-import { computeScore } from '../model/computeScore.ts';
-import { NotFoundError } from '../error/NotFoundError.ts';
 import {
   UserRepository,
   ProjectRepository,

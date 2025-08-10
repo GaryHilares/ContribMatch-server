@@ -1,27 +1,7 @@
 import express from 'express';
-import { ContribMatchFacade } from '../controller/ContribMatchFacade.ts';
-import { Proficiency } from '../model/Skill.ts';
-import type { Skill } from '../model/Skill.ts';
-import { NotFoundError } from '../error/NotFoundError.ts';
 
 const app = express();
 app.use(express.json({ type: 'application/json' }));
-
-const facade = new ContribMatchFacade();
-
-function isValidSkills(obj: unknown): obj is Array<Skill> {
-  return (
-    obj instanceof Array &&
-    obj.every(
-      (el) =>
-        el instanceof Object &&
-        'name' in el &&
-        typeof el.name === 'string' &&
-        'proficiency' in el &&
-        el.proficiency in Proficiency
-    )
-  );
-}
 
 /**
  * @brief Produces information about a user, such as its name and its matches.
