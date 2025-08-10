@@ -12,6 +12,7 @@ enum Proficiency {
  * @brief Represents a skill with a name and level of proficiency.
  */
 interface Skill {
+  id: number;
   name: string;
   proficiency: Proficiency;
 }

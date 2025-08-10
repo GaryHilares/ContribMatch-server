@@ -3,40 +3,40 @@ class FinalAccessError {}
 /**
  * @brief Represents a contributor with a username, skills, and matched projects.
  */
-class Contributor {
+class User {
   private id: number | null;
-  private username: string;
-  private email: string;
+  private name: string;
+  private passwordHash: string;
 
   /**
    * @brief Creates a new user with the given username and skills.
-   * @param username Username of the user.
+   * @param name Username of the user.
    * @param skills Skills of the user.
    */
-  public constructor(username: string, email: string, id: number | null = null) {
+  public constructor(
+    name: string,
+    passwordHash: string,
+    id: number | null = null
+  ) {
     this.id = id;
-    this.username = username;
-    this.email = email;
+    this.name = name;
+    this.passwordHash = passwordHash;
   }
 
   /**
    * @brief Produces the username of this contributor.
    * @returns The username of this contributor.
    */
-  public getUsername(): string {
-    return this.username;
-  }
-
-  /**
-   * @brief Produces the projects that this contributor is matched to.
-   * @returns The projects that this contributor is matched to.
-   */
-  public getEmail(): string {
-    return this.email;
+  public getName(): string {
+    return this.name;
   }
 
   public getId(): number | null {
     return this.id;
+  }
+
+  public getPasswordHash(): string {
+    return this.passwordHash;
   }
 
   public setFinalId(id: number): void {
@@ -59,8 +59,8 @@ class Project {
    * @param name Name of the project.
    * @param skills Skills of the project.
    */
-  public constructor(name: string) {
-    this.id = null;
+  public constructor(name: string, id: number | null = null) {
+    this.id = id;
     this.name = name;
   }
 
@@ -84,4 +84,4 @@ class Project {
   }
 }
 
-export { Contributor, Project };
+export { User, Project };

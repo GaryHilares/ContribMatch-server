@@ -1,48 +1,50 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { Contributor, Project } from '../model/model';
+import { User, Project } from '../model/model';
 import { Skill } from '../model/Skill';
+import { Client as PostgreClient } from 'pg';
 
+/**
+ * @brief Generic error for database operations.
+ */
 class DatabaseError extends Error {}
 
-interface UserRepository<Criteria> {
-  create(contributor: Contributor): Promise<Contributor>;
-  read(criteria: Criteria): Promise<Contributor>;
-  update(contributor: Contributor): Promise<Contributor>;
-  delete(contributor: Contributor): Promise<Contributor>;
+interface UserRepository {
+  create(user: User): Promise<User>;
+  read(id: number): Promise<User>;
+  delete(user: User): Promise<User>;
 }
 
-interface UserSkillRepository<ContributorCriteria> {
-  upsertForUser(
-    criteria: ContributorCriteria,
-    skills: Array<Skill>
-  ): Array<Skill>;
-  fetchForUser(criteria: ContributorCriteria): Array<Skill>;
+interface UserSkillRepository {
+  addSkillForUser(userId: number, skill: Skill): Promise<void>;
+  removeSkillForUser(userId: number, skill: Skill): Promise<void>;
+  fetchForUserById(userId: number): Promise<Array<Skill>>;
 }
 
-interface ProjectRepository<Criteria> {
-  create(contributor: Project): Promise<Project>;
-  read(criteria: Criteria): Promise<Project>;
-  update(contributor: Project): Promise<Project>;
-  delete(contributor: Project): Promise<Project>;
+interface ProjectRepository {
+  create(project: Project): Promise<Project>;
+  read(id: number): Promise<Project>;
+  delete(project: Project): Promise<Project>;
 }
 
-interface ProjectSkillRepository<ProjectCriteria> {
-  upsertForUser(criteria: ProjectCriteria, skills: Array<Skill>): Array<Skill>;
-  fetchForUser(criteria: ProjectCriteria): Array<Skill>;
+interface ProjectSkillRepository {
+  addSkillForProject(projectId: number, skill: Skill): Promise<void>;
+  removeSkillForProject(projectId: number, skill: Skill): Promise<void>;
+  fetchForProjectById(projectId: number): Promise<Array<Skill>>;
 }
 
-class SupabaseUserRepository implements UserRepository<number> {
-  private client: SupabaseClient;
-  private tableName: string;
+interface MatchRepository {
+  matchProjects(): Promise<void>;
+}
+
+class PostgreUserRepository implements UserRepository {
+  private client: PostgreClient;
 
   /**
    * @brief Creates a new instance that manages data from given table in given client.
    * @param client Client to use to interact with data.
    * @param tableName Database table where data is stored.
    */
-  public constructor(client: SupabaseClient, tableName: string) {
+  public constructor(client: PostgreClient) {
     this.client = client;
-    this.tableName = tableName;
   }
 
   /**
@@ -51,21 +53,18 @@ class SupabaseUserRepository implements UserRepository<number> {
    * @returns Resolves to reference to the given contributor, with its ID updated.
    * @throws DatabaseError if the operation fails due to some reason.
    */
-  async create(contributor: Contributor): Promise<Contributor> {
+  async create(contributor: User): Promise<User> {
     if (contributor.getId() !== null) {
       throw new DatabaseError();
     }
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .insert({
-        username: contributor.getUsername(),
-        email: contributor.getEmail(),
-      })
-      .select();
-    if (error || data.length !== 1) {
+    const res = await this.client.query(
+      'INSERT INTO users (name, password_hash) VALUES ($1, $2) RETURNING id;',
+      [contributor.getName(), contributor.getPasswordHash()]
+    );
+    if (res.rowCount !== 1) {
       throw new DatabaseError();
     }
-    contributor.setFinalId(data[0].id);
+    contributor.setFinalId(res.rows[0].id);
     return contributor;
   }
 
@@ -75,17 +74,17 @@ class SupabaseUserRepository implements UserRepository<number> {
    * @returns Resolves to the contributor stored in the database with given ID.
    * @throws DatabaseError if the operation fails due to some reason.
    */
-  async read(criteria: number): Promise<Contributor> {
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .select()
-      .eq('id', criteria);
-    if (error || data.length !== 1) {
+  async read(id: number): Promise<User> {
+    const res = await this.client.query(
+      'SELECT id, name, email FROM users WHERE id = $1;',
+      [id]
+    );
+    if (res.rowCount !== 1) {
       throw new DatabaseError();
     }
-    const contributorData = data[0];
-    const contributor = new Contributor(
-      contributorData.username,
+    const contributorData = res.rows[0];
+    const contributor = new User(
+      contributorData.name,
       contributorData.email,
       contributorData.id
     );
@@ -93,156 +92,165 @@ class SupabaseUserRepository implements UserRepository<number> {
   }
 
   /**
-   * @brief Updates the entry of the given contributor in the database.
-   * @param contributor Contributor with ID to update, with its new value.
-   * @returns Resolves to the given contributor.
-   * @throws DatabaseError if the operation fails due to some reason.
-   */
-  async update(contributor: Contributor): Promise<Contributor> {
-    if (contributor.getId() === null) {
-      throw new DatabaseError();
-    }
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .update({
-        username: contributor.getUsername(),
-        email: contributor.getEmail(),
-      })
-      .eq('id', contributor.getId())
-      .select();
-    if (error || data.length !== 1) {
-      throw new DatabaseError();
-    }
-    return contributor;
-  }
-
-  /**
    * @brief Deletes the entry of the given contributor from the database.
-   * @param contributor Contributor with ID to delete.
+   * @param user Contributor with ID to delete.
    * @returns Resolves to the given contributor.
    * @throws DatabaseError if the operation fails due to some reason.
    */
-  async delete(contributor: Contributor): Promise<Contributor> {
-    if (contributor.getId() === null) {
+  async delete(user: User): Promise<User> {
+    if (user.getId() === null) {
       throw new DatabaseError();
     }
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .delete()
-      .eq('id', contributor.getId())
-      .select();
-    if (error || data.length !== 1) {
+    const res = await this.client.query(
+      'DELETE FROM users WHERE id = $1 RETURNING id;',
+      [user.getId()]
+    );
+    if (res.rowCount !== 1) {
       throw new DatabaseError();
     }
-    return contributor;
+    return user;
   }
 }
 
-class SupabaseUserSkillRepository implements UserSkillRepository<number> {
-  private client: SupabaseClient;
-  private tableName: string;
+class PostgreUserSkillRepository implements UserSkillRepository {
+  private client: PostgreClient;
 
   /**
    * @brief Creates a new instance that manages data from given table in given client.
    * @param client Client to use to interact with data.
    * @param tableName Database table where data is stored.
    */
-  public constructor(client: SupabaseClient, tableName: string) {
+  public constructor(client: PostgreClient) {
     this.client = client;
-    this.tableName = tableName;
   }
 
-  /**
-   * @brief Adds the given contributor to the database, creating a new row on each call.
-   * @param contributor A contributor that has not been added yet (i.e. has no ID).
-   * @returns Resolves to reference to the given contributor, with its ID updated.
-   * @throws DatabaseError if the operation fails due to some reason.
-   */
-  async create(contributor: Contributor): Promise<Contributor> {
-    if (contributor.getId() !== null) {
-      throw new DatabaseError();
-    }
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .insert({
-        username: contributor.getUsername(),
-        email: contributor.getEmail(),
-      })
-      .select();
-    if (error || data.length !== 1) {
-      throw new DatabaseError();
-    }
-    contributor.setFinalId(data[0].id);
-    return contributor;
-  }
-
-  /**
-   * @brief Fetches a contributor, based on the given criteria.
-   * @param criteria ID of the contributor to fetch.
-   * @returns Resolves to the contributor stored in the database with given ID.
-   * @throws DatabaseError if the operation fails due to some reason.
-   */
-  async read(criteria: number): Promise<Contributor> {
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .select()
-      .eq('id', criteria);
-    if (error || data.length !== 1) {
-      throw new DatabaseError();
-    }
-    const contributorData = data[0];
-    const contributor = new Contributor(
-      contributorData.username,
-      contributorData.email,
-      contributorData.id
+  async addSkillForUser(userId: number, skill: Skill): Promise<void> {
+    await this.client.query(
+      'INSERT INTO users_skills_joint (user_id, skill_id) VALUES ($1, $2);',
+      [userId, skill.id]
     );
-    return contributor;
   }
 
-  /**
-   * @brief Updates the entry of the given contributor in the database.
-   * @param contributor Contributor with ID to update, with its new value.
-   * @returns Resolves to the given contributor.
-   * @throws DatabaseError if the operation fails due to some reason.
-   */
-  async update(contributor: Contributor): Promise<Contributor> {
-    if (contributor.getId() === null) {
-      throw new DatabaseError();
-    }
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .update({
-        username: contributor.getUsername(),
-        email: contributor.getEmail(),
-      })
-      .eq('id', contributor.getId())
-      .select();
-    if (error || data.length !== 1) {
-      throw new DatabaseError();
-    }
-    return contributor;
+  async removeSkillForUser(userId: number, skill: Skill): Promise<void> {
+    await this.client.query(
+      'DELETE FROM users_skills_joint WHERE user_id = $1, skill_id = $2;',
+      [userId, skill.id]
+    );
   }
 
+  async fetchForUserById(userId: number): Promise<Array<Skill>> {
+    const res = await this.client.query(
+      'SELECT skills.id AS id, skills.name AS name, joint.proficiency AS proficiency FROM users_skills_joint AS joint JOIN skills ON joint.skill_id = skills.id;',
+      [userId]
+    );
+    return res.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      proficiency: row.proficiency,
+    }));
+  }
+}
+
+class PostgreProjectRepository implements ProjectRepository {
+  private client: PostgreClient;
+
   /**
-   * @brief Deletes the entry of the given contributor from the database.
-   * @param contributor Contributor with ID to delete.
-   * @returns Resolves to the given contributor.
-   * @throws DatabaseError if the operation fails due to some reason.
+   * @brief Creates a new instance that manages data from given table in given client.
+   * @param client Client to use to interact with data.
    */
-  async delete(project: Project): Promise<Contributor> {
+  public constructor(client: PostgreClient) {
+    this.client = client;
+  }
+
+  public async create(project: Project): Promise<Project> {
+    if (project.getId() !== null) {
+      throw new DatabaseError();
+    }
+    const res = await this.client.query(
+      'INSERT INTO projects (name) VALUES ($1) RETURNING id;',
+      [project.getName()]
+    );
+    if (res.rowCount !== 1) {
+      throw new DatabaseError();
+    }
+    project.setFinalId(res.rows[0].id);
+    return project;
+  }
+
+  async read(id: number): Promise<Project> {
+    const res = await this.client.query(
+      'SELECT id, name FROM projects WHERE id = $1;',
+      [id]
+    );
+    if (res.rowCount !== 1) {
+      throw new DatabaseError();
+    }
+    const projectData = res.rows[0];
+    const project = new Project(projectData.name, projectData.id);
+    return project;
+  }
+
+  async delete(project: Project): Promise<Project> {
     if (project.getId() === null) {
       throw new DatabaseError();
     }
-    const { data, error } = await this.client
-      .from(this.tableName)
-      .delete()
-      .eq('id', project.getId())
-      .select();
-    if (error || data.length !== 1) {
+    const res = await this.client.query(
+      'DELETE FROM project WHERE id = $1 RETURNING id;',
+      [project.getId()]
+    );
+    if (res.rowCount !== 1) {
       throw new DatabaseError();
     }
     return project;
   }
 }
 
-export { SupabaseUserRepository };
+class PostgreProjectSkillRepository implements ProjectSkillRepository {
+  private client: PostgreClient;
+
+  /**
+   * @brief Creates a new instance that manages data from given table in given client.
+   * @param client Client to use to interact with data.
+   */
+  public constructor(client: PostgreClient) {
+    this.client = client;
+  }
+
+  async addSkillForProject(projectId: number, skill: Skill): Promise<void> {
+    await this.client.query(
+      'INSERT INTO projects_skills_joint (project_id, skill_id) VALUES ($1, $2);',
+      [projectId, skill.id]
+    );
+  }
+
+  async removeSkillForProject(projectId: number, skill: Skill): Promise<void> {
+    await this.client.query(
+      'DELETE FROM projects_skills_joint WHERE project_id = $1, skill_id = $2;',
+      [projectId, skill.id]
+    );
+  }
+
+  async fetchForProjectById(projectId: number): Promise<Array<Skill>> {
+    const res = await this.client.query(
+      'SELECT skills.id AS id, skills.name AS name, joint.proficiency AS proficiency FROM projects_skills_joint AS joint JOIN skills ON joint.skill_id = skills.id;',
+      [projectId]
+    );
+    return res.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      proficiency: row.proficiency,
+    }));
+  }
+}
+
+export {
+  UserRepository,
+  ProjectRepository,
+  UserSkillRepository,
+  ProjectSkillRepository,
+  MatchRepository,
+  PostgreUserRepository,
+  PostgreProjectRepository,
+  PostgreUserSkillRepository,
+  PostgreProjectSkillRepository,
+};

@@ -23,130 +23,160 @@ function isValidSkills(obj: unknown): obj is Array<Skill> {
   );
 }
 
-app.post('/contributors', (req, res) => {
-  if (
-    req.body.name &&
-    typeof req.body.name === 'string' &&
-    req.body.skills &&
-    isValidSkills(req.body.skills)
-  ) {
-    const id = facade.createContributor(req.body.name, req.body.skills);
-    res.status(201).send(JSON.stringify({ id: id }));
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Produces information about a user, such as its name and its matches.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID is in invalid format.
+ *          - 401 HTTP status code** if the auth token is not present or in invalid format.
+ *          - **403 HTTP status code** if the auth token is not authorized to access the page.
+ *          - **404 HTTP status code** if the ID is in valid format, but there is no user with the given ID.
+ */
+app.get('/users/:userId', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.post('/projects', (req, res) => {
-  if (
-    req.body.name &&
-    typeof req.body.name === 'string' &&
-    req.body.skills &&
-    isValidSkills(req.body.skills)
-  ) {
-    const id = facade.createProject(req.body.name, req.body.skills);
-    res.status(201).send(JSON.stringify({ id: id }));
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Creates a new user.
+ * @details Responds with:
+ *          - 201 HTTP status code if the request resolves successfully. The **headers** of the response should contain
+ *            a `Location` header to `GET /users/:id`. The **body** of the response should contain an auth-token for the
+ *            newly created user.
+ *          - 400 HTTP status code if the name already exists, or if the name or password are in invalid format.
+ */
+app.post('/users', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.get('/contributors/:id', (req, res) => {
-  if (!Number.isNaN(Number(req.params.id))) {
-    try {
-      const contributor = facade.getContributor(Number(req.params.id));
-      res.status(201).send(JSON.stringify({ contributor }));
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        res.status(404).send(`ID ${req.params.id} not found`);
-      } else {
-        res.status(500).send(`Internal Server Error`);
-      }
-    }
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Deletes a user, and all of its projects.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token is not authorized to delete this user.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no user with the given ID.
+ */
+app.delete('/users/:userId', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.get('/projects/:id', (req, res) => {
-  if (!Number.isNaN(Number(req.params.id))) {
-    try {
-      const project = facade.getProject(Number(req.params.id));
-      res.status(201).send(JSON.stringify({ project }));
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        res.status(404).send(`ID ${req.params.id} not found`);
-      } else {
-        res.status(500).send(`Internal Server Error`);
-      }
-    }
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Adds a skill for a user.
+ * @details Responds with:
+ *          - 201 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID, name or proficiency are in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token present, but it is not authorized to act on this user.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no user with the given ID.
+ */
+app.post('/users/:userId/skills/', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.put('/contributors/:id', (req, res) => {
-  if (
-    !Number.isNaN(Number(req.params.id)) &&
-    req.body.skills &&
-    isValidSkills(req.body.skills)
-  ) {
-    try {
-      facade.editContributor(Number(req.params.id), req.body.skills);
-      res.status(200).send('Contributor edited successfully');
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        res.status(404).send(`ID ${req.params.id} not found`);
-      } else {
-        res.status(500).send(`Internal Server Error`);
-      }
-    }
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Deletes a skill for a user.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID is in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token is present, but it is not authorized to act on this user.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no user with the given ID.
+ */
+app.delete('/users/:userId/skills/:id', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.delete('/contributors/:id', (req, res) => {
-  if (!Number.isNaN(Number(req.params.id))) {
-    try {
-      facade.deleteContributor(Number(req.params.id));
-      res.status(200).send('Contributor deleted successfully');
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        res.status(404).send(`ID ${req.params.id} not found`);
-      } else {
-        res.status(500).send(`Internal Server Error`);
-      }
-    }
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Creates a new authentication token.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully. The body of the response should contain an
+ *            auth-token for the session.
+ *          - 400 HTTP status code if the name or password are not present.
+ *          - 401 HTTP status code if the name and password do not match a user.
+ */
+app.post('/session/', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.put('/projects/:id', (req, res) => {
-  if (
-    !Number.isNaN(Number(req.params.id)) &&
-    req.body.skills &&
-    isValidSkills(req.body.skills)
-  ) {
-    try {
-      facade.editProject(Number(req.params.id), req.body.skills);
-      res.status(200).send('Project edited successfully');
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        res.status(404).send(`ID ${req.params.id} not found`);
-      } else {
-        res.status(500).send(`Internal Server Error`);
-      }
-    }
-  } else {
-    res.status(400).send('Bad request');
-  }
+/**
+ * @brief Deletes (logs out) the authentication token.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 401 HTTP status code if the auth-token is not present or in invalid format.
+ */
+app.delete('/session/', () => {
+  throw new Error('Method not implemented.');
 });
 
-app.post('/matches', (req, res) => {
-  facade.createMatches();
-  res.status(200).send('Created matches successfully');
+/**
+ * @brief Produces information about a project, such as its name and its matches.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID is in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no project with the given ID.
+ */
+app.get('/projects/:projectId', () => {
+  throw new Error('Method not implemented.');
+});
+
+/**
+ * @brief Creates a new project.
+ * @details Responds with:
+ *          - 201 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the name is in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token present, but it is not authorized to act on this user.
+ */
+app.post('/projects/', () => {
+  throw new Error('Method not implemented.');
+});
+
+/**
+ * @brief Deletes a project.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID is in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token present, but it is not authorized to act on this project.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no project with the given ID.
+ */
+app.delete('/projects/:projectId', () => {
+  throw new Error('Method not implemented.');
+});
+
+/**
+ * @brief Adds a skill for a project.
+ * @details Responds with:
+ *          - 201 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID, name or proficiency are in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token present, but it is not authorized to act on this project.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no project with the given ID.
+ */
+app.post('/projects/:projectId/skills/', () => {
+  throw new Error('Method not implemented.');
+});
+
+/**
+ * @brief Deletes a skill for a project.
+ * @details Responds with:
+ *          - 200 HTTP status code if the request resolves successfully.
+ *          - 400 HTTP status code if the ID is in invalid format.
+ *          - 401 HTTP status code if the auth token is not present or in invalid format.
+ *          - 403 HTTP status code if the auth token is present, but it is not authorized to act on this project.
+ *          - 404 HTTP status code if the ID is in valid format, but there is no project with the given ID.
+ */
+app.delete('/projects/:projectId/skills/:skillId', () => {
+  throw new Error('Method not implemented.');
+});
+
+/**
+ * @brief Matches unmatched users and projects according to rule.
+ * @details Responds with 200 HTTP status code, as the request always resolves successfully.
+ */
+app.post('/matches', () => {
+  throw new Error('Method not implemented.');
 });
 
 const PORT = process.env.PORT || 3000;
